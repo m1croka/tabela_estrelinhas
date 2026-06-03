@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela de Estrelinhas - Avaliação dos Jogos de Tabuleiro</title>
+
+<style>
+:root{
+  --azul:#1f65b7;
+  --ciano:#20bcd4;
+  --verde:#79c843;
+  --laranja:#f39b31;
+  --amarelo:#ffd84d;
+  --texto:#173052;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Trebuchet MS", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(32,188,212,.20), transparent 28%),
+    radial-gradient(circle at 90% 85%, rgba(255,216,77,.22), transparent 26%),
+    linear-gradient(135deg,#f7fbff,#ffffff);
+  padding:22px;
+  color:var(--texto);
+}
+
+.page{
+  width:min(980px,100%);
+  margin:auto;
+  background:#fff;
+  border:3px dashed #87c7e8;
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 18px 45px rgba(31,101,183,.16);
+  position:relative;
+  overflow:hidden;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:18px;
+  position:relative;
+}
+
+.title{
+  display:inline-block;
+  background:linear-gradient(180deg,#233c8f,#172b6f);
+  color:#fff;
+  padding:12px 32px;
+  border-radius:16px;
+  font-weight:900;
+  text-transform:uppercase;
+  font-size:clamp(1.7rem,4vw,2.8rem);
+  letter-spacing:1px;
+  box-shadow:0 6px 0 rgba(0,0,0,.18);
+}
+
+.subtitle{
+  display:inline-block;
+  margin-top:8px;
+  background:#48bfd0;
+  color:#fff;
+  border-radius:999px;
+  padding:8px 22px;
+  font-weight:900;
+  text-transform:uppercase;
+  font-size:clamp(.9rem,2vw,1.15rem);
+}
+
+.doodle{
+  position:absolute;
+  right:14px;
+  top:4px;
+  font-size:3.2rem;
+  transform:rotate(10deg);
+}
+
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:16px 0;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-weight:900;
+  color:#24437d;
+  text-transform:uppercase;
+  font-size:.9rem;
+}
+
+input[type="text"]{
+  border:2px solid #b8d8ee;
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:1rem;
+  outline:none;
+}
+
+input[type="text"]:focus{
+  border-color:var(--ciano);
+  box-shadow:0 0 0 4px rgba(32,188,212,.15);
+}
+
+.table-wrap{
+  overflow-x:auto;
+  border:2px solid #b8d8ee;
+  border-radius:16px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+th,td{
+  border:1.8px solid #b8d8ee;
+  padding:10px;
+  text-align:center;
+}
+
+th{
+  background:#dff3ff;
+  color:#163b77;
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+th.criteria{
+  text-align:left;
+  width:34%;
+}
+
+.score-head{
+  color:#fff;
+  font-size:1.1rem;
+}
+
+.s1{background:#d94b79}
+.s2{background:#f39b31}
+.s3{background:#ffd84d;color:#4a3b00}
+.s4{background:#7bc65a}
+.s5{background:#4aa5df}
+
+.criteria-cell{
+  text-align:left;
+  font-weight:800;
+  background:#fbfdff;
+}
+
+.star-label{
+  display:inline-grid;
+  place-items:center;
+  cursor:pointer;
+}
+
+.star-label input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.star{
+  font-size:2rem;
+  line-height:1;
+  color:#c4c7cc;
+  text-shadow:0 1px 0 #fff;
+  transition:.15s;
+}
+
+.star-label input:checked + .star{
+  color:var(--amarelo);
+  -webkit-text-stroke:1px #b68500;
+  transform:scale(1.12);
+}
+
+.feedback{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:18px;
+}
+
+.card{
+  border:2.5px solid;
+  border-radius:18px;
+  padding:14px;
+  background:#fff;
+}
+
+.card h3{
+  margin:0 0 10px;
+  font-size:1rem;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.card.green{border-color:var(--verde)}
+.card.green h3{color:#4f9a25}
+
+.card.orange{border-color:var(--laranja)}
+.card.orange h3{color:#c46e00}
+
+.card.blue{border-color:var(--azul)}
+.card.blue h3{color:var(--azul)}
+
+textarea{
+  width:100%;
+  min-height:110px;
+  border:0;
+  outline:none;
+  resize:vertical;
+  font-family:inherit;
+  font-size:1rem;
+  line-height:28px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 27px,
+      rgba(23,48,82,.45) 28px
+    );
+}
+
+.legend{
+  margin-top:18px;
+  border:2px dashed #b8d8ee;
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  font-weight:900;
+}
+
+.legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:6px 12px;
+}
+
+.empty-star{color:#c4c7cc;font-size:1.7rem}
+.full-star{color:var(--amarelo);font-size:1.7rem;-webkit-text-stroke:1px #b68500}
+
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:900;
+  text-transform:uppercase;
+  border-radius:18px;
+  padding:15px 24px;
+  font-size:1rem;
+  transition:.15s;
+}
+
+.primary{
+  background:linear-gradient(180deg,#82d85c,#52a72a);
+  color:#123b12;
+  box-shadow:0 7px 0 #2f741b;
+}
+
+.secondary{
+  background:white;
+  color:var(--azul);
+  border:3px solid var(--azul);
+  box-shadow:0 7px 0 rgba(31,101,183,.20);
+}
+
+button:hover{transform:translateY(-2px)}
+button:active{transform:translateY(4px);box-shadow:none}
+
+.footer{
+  text-align:center;
+  margin-top:14px;
+  font-weight:900;
+  color:#3979ad;
+}
+
+@media(max-width:760px){
+  body{padding:10px}
+  .page{padding:14px;border-radius:18px}
+  .info,.feedback{grid-template-columns:1fr}
+  .doodle{display:none}
+}
+
+@media print{
+  @page{size:A4 portrait;margin:8mm}
+  body{background:#fff;padding:0}
+  .page{
+    width:100%;
+    box-shadow:none;
+    border:2px dashed #87c7e8;
+    border-radius:12px;
+    padding:12px;
+  }
+  .actions{display:none}
+  .title{font-size:1.7rem;padding:8px 24px}
+  .subtitle{font-size:.85rem;padding:6px 16px}
+  .info{gap:8px;margin:10px 0}
+  input[type="text"]{padding:8px}
+  th,td{padding:6px}
+  .star{font-size:1.45rem}
+  .feedback{gap:8px;margin-top:10px}
+  .card{padding:8px}
+  .card h3{font-size:.8rem}
+  textarea{
+    min-height:70px;
+    line-height:22px;
+    background:repeating-linear-gradient(to bottom, transparent 0px, transparent 21px, rgba(23,48,82,.45) 22px);
+  }
+  .legend{padding:8px;margin-top:10px}
+  .footer{font-size:.8rem}
+}
+</style>
+</head>
+
+<body>
+<section class="page">
+  <header class="header">
+    <div class="title">⭐ Tabela de Estrelinhas ⭐</div><br>
+    <div class="subtitle">Avaliação dos Jogos de Tabuleiro</div>
+    <div class="doodle">🎲</div>
+  </header>
+
+  <section class="info">
+    <label class="field">
+      Nome do time avaliador:
+      <input type="text" id="timeAvaliador">
+    </label>
+    <label class="field">
+      Nome do jogo:
+      <input type="text" id="nomeJogo">
+    </label>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="criteria">Critério avaliado</th>
+          <th class="score-head s1">1</th>
+          <th class="score-head s2">2</th>
+          <th class="score-head s3">3</th>
+          <th class="score-head s4">4</th>
+          <th class="score-head s5">5</th>
+        </tr>
+      </thead>
+      <tbody id="criteriaBody"></tbody>
+    </table>
+  </section>
+
+  <section class="feedback">
+    <div class="card green">
+      <h3>👍 O que mais gostamos no jogo?</h3>
+      <textarea></textarea>
+    </div>
+
+    <div class="card orange">
+      <h3>💡 Uma sugestão de melhoria</h3>
+      <textarea></textarea>
+    </div>
+
+    <div class="card blue">
+      <h3>⭐ Algo criativo que chamou atenção</h3>
+      <textarea></textarea>
+    </div>
+  </section>
+
+  <section class="legend">
+    <strong>Legenda:</strong>
+    <span><span class="empty-star">☆</span> ainda pode melhorar</span>
+    <span><span class="full-star">★</span> excelente / muito bom</span>
+  </section>
+
+  <section class="actions">
+    <button class="primary" onclick="gerarPDF()">Gerar PDF</button>
+    <button class="secondary" onclick="limparFormulario()">Limpar tabela</button>
+  </section>
+
+  <p class="footer">Pense • Teste • Avalie • Melhore</p>
+</section>
+
+<script>
+const criterios = [
+  "As regras estavam claras?",
+  "O jogo foi divertido?",
+  "O nível de dificuldade foi adequado?",
+  "O objetivo do jogo fazia sentido?",
+  "O tabuleiro e os materiais estavam organizados?",
+  "O jogo foi criativo?",
+  "Todos conseguiram participar?",
+  "O tempo de jogo foi adequado?"
+];
+
+const tbody = document.getElementById("criteriaBody");
+
+criterios.forEach((criterio, index) => {
+  const tr = document.createElement("tr");
+
+  const tdCriterio = document.createElement("td");
+  tdCriterio.className = "criteria-cell";
+  tdCriterio.textContent = criterio;
+  tr.appendChild(tdCriterio);
+
+  for(let nota = 1; nota <= 5; nota++){
+    const td = document.createElement("td");
+    const label = document.createElement("label");
+    label.className = "star-label";
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "criterio_" + index;
+    input.value = nota;
+
+    const star = document.createElement("span");
+    star.className = "star";
+    star.textContent = "★";
+
+    label.appendChild(input);
+    label.appendChild(star);
+    td.appendChild(label);
+    tr.appendChild(td);
+  }
+
+  tbody.appendChild(tr);
+});
+
+function gerarPDF(){
+  const nome = document.getElementById("nomeJogo").value.trim();
+  document.title = nome ? "Tabela de Estrelinhas - " + nome : "Tabela de Estrelinhas";
+  window.print();
+}
+
+function limparFormulario(){
+  document.querySelectorAll("input[type='text'], textarea").forEach(campo => campo.value = "");
+  document.querySelectorAll("input[type='radio']").forEach(campo => campo.checked = false);
+}
+</script>
+</body>
+</html>
